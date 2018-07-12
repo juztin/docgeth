@@ -20,12 +20,18 @@ add_docgeth_volume () {
 }
 
 # ------ Docker
-dock () {
+print_docker_command () {
 	printf "docker run \ \n"
 	printf "	%s \ \n" "${DOCKER_PARAMS[@]}"
 	printf "	%s \ \n" "${DOCKER_VOLUMES[@]}"
-	printf "	%s %s \ \n" "$DOCKER_IMAGE" "${DOCKER_COMMAND[@]}"
-	printf "\n--------------------------------------------------------------------------------\n"
+	printf "	%s %s\n" "$DOCKER_IMAGE" "${DOCKER_COMMAND[@]}"
+}
+
+dock () {
+	if [ "$PRINT_CMD" = true ]; then
+		print_docker_command
+		exit 0
+	fi
 docker run \
 	${DOCKER_PARAMS[@]} \
 	${DOCKER_VOLUMES[@]} \
@@ -95,21 +101,23 @@ print_help () {
 	printf '\n'
 	printf '  EXAMPLES\n'
 	printf '    Run Geth command:\n'
-	printf '      %% ./dockit.sh geth account new --password /data/password\n'
-	printf '      %% ./dockit.sh geth account new --password <(echo password)\n'
-	printf '      %% ./dockit.sh geth account update 0 1 2\n'
-	printf '      %% ./dockit.sh geth account list\n\n'
+	printf '      %% docgeth.sh geth account new --password /data/password\n'
+	printf '      %% docgeth.sh geth account new --password <(echo password)\n'
+	printf '      %% docgeth.sh geth account update 0 1 2\n'
+	printf '      %% docgeth.sh geth account list\n\n'
 	printf '    Initialize a new Geth node (creates in current directory):\n'
-	printf '      %% ./dockit.sh truffle develop\n\n'
+	printf '      %% docgeth.sh truffle develop\n\n'
 	printf '    Get private key for account:\n'
-	printf '      %% ./dockit.sh pkey 0x1234 "password"\n\n'
+	printf '      %% docgeth.sh pkey 0x1234 password\n\n'
 	printf '    Run Geth node:\n'
-	printf '      %% ./dockit.sh run\n\n'
+	printf '      %% docgeth.sh run\n\n'
 	printf '    Run shell:\n'
-	printf '      %% ./dockit.sh shell\n'
-	printf '      %% ./dockit.sh shell -c "ls -la"\n'
-	printf '      %% ./dockit.sh shell -c "geth --version"\n'
-	printf '      %% ./dockit.sh shell -c "gethpkey --key 0x123123 --password s3cr3t"\n'
+	printf '      %% docgeth.sh shell\n'
+	printf '      %% docgeth.sh shell -c "ls -la"\n'
+	printf '      %% docgeth.sh shell -c "geth --version"\n'
+	printf '      %% docgeth.sh shell -c "gethpkey --key 0x123123 --password s3cr3t"\n\n'
+	printf '    Output Docker command only (does not execute it):\n'
+	printf '      %% PRINT_CMD=true docgeth.sh pkey 0x1234 password\n'
 	printf '\n'
 }
 
