@@ -12,7 +12,7 @@ DOCKER_VOLUMES=()
 DOCKER_COMMAND=()
 
 add_volume () {
-	DOCKER_VOLUMES+=("--volume $(pwd)/$1:/data/$1")
+	DOCKER_VOLUMES+=("--volume $(pwd)/$1:$2")
 }
 
 add_docgeth_volume () {
@@ -56,11 +56,11 @@ command_pkey () {
 }
 
 command_run () {
-	add_docgeth_volume ".docgeth"
+	add_docgeth_volume
+	#add_volume ".docgeth/.ethereum" "/root/.ethereum"
 	DOCKER_PARAMS+=('--publish 30303:30303')
 	DOCKER_PARAMS+=('--publish 8545:8545')
 	DOCKER_COMMAND+=' --datadir /data/blockchain'
-	#DOCKER_COMMAND+=' --dev'
 	DOCKER_COMMAND+=' --networkid 10'
 	DOCKER_COMMAND+=' --maxpeers 3'
 	DOCKER_COMMAND+=' --nat any'
@@ -68,8 +68,6 @@ command_run () {
 	DOCKER_COMMAND+=' --rpc'
 	DOCKER_COMMAND+=' --rpcaddr 0.0.0.0'
 	DOCKER_COMMAND+=' --rpcport 8545'
-	#DOCKER_COMMAND+=' --rpcapi "db,eth,net,web3,personal"'
-	#DOCKER_COMMAND+=' --rpcapi "eth,net,web3,admin,personal,miner,txpool"'
 	DOCKER_COMMAND+=' --rpcapi web3,eth,personal,miner,net,txpool'
 	DOCKER_COMMAND+=' --rpccorsdomain="*"'
 	DOCKER_COMMAND+=' --ws'
