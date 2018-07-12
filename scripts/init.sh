@@ -38,7 +38,7 @@ createAccounts() {
 		ACCOUNTS=$ACCOUNTS'"0x'$ACCOUNT_ID'": { "balance": "999000000000000000000" },'$'\n    '
 	done
 	# Remove trailing comma
-	ACCOUNTS=${ACCOUNTS:0:${#ACCOUNTS}-6}
+	ACCOUNTS=${ACCOUNTS%,*}
 }
 
 # Creates the genesis Geth configuration file.
