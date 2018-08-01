@@ -69,12 +69,10 @@ command_run () {
 	DOCKER_PARAMS+=('--publish 8545:8545')
 	DOCKER_COMMAND+=' --datadir /data/blockchain'
 	DOCKER_COMMAND+=' --networkid 10'
-	DOCKER_COMMAND+=' --maxpeers 3'
 	DOCKER_COMMAND+=' --nat any'
 	DOCKER_COMMAND+=' --nodiscover'
 	DOCKER_COMMAND+=' --rpc'
 	DOCKER_COMMAND+=' --rpcaddr 0.0.0.0'
-	DOCKER_COMMAND+=' --rpcport 8545'
 	DOCKER_COMMAND+=' --rpcapi web3,eth,personal,miner,net,txpool'
 	DOCKER_COMMAND+=' --rpccorsdomain="*"'
 	DOCKER_COMMAND+=' --ws'

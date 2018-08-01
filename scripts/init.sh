@@ -87,7 +87,10 @@ initNode() {
 
 # ----- Create Password File
 echo "Creating password file: \"$PASSWORD_FILE\""
-echo "$PASSWORD" > "$PASSWORD_FILE"
+: > "$PASSWORD_FILE"
+for i in $(seq 1 $ACCOUNT_NUM); do
+	echo "$PASSWORD" >> "$PASSWORD_FILE"
+done
 
 # ----- Create Accounts
 echo "Creating $ACCOUNT_NUM Accounts..."
