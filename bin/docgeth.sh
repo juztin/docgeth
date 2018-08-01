@@ -82,7 +82,7 @@ command_run () {
 	DOCKER_COMMAND+=' --metrics'
 	DOCKER_COMMAND+=' --preload /usr/local/bin/miner.js'
 	DOCKER_COMMAND+=' --gcmode archive'
-	DOCKER_COMMAND+=' --unlock 5'
+	#DOCKER_COMMAND+=' --unlock 5'
 	DOCKER_COMMAND+=' --password /data/password'
 	DOCKER_COMMAND+=' console'
 }
