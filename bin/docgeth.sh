@@ -1,7 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 #
 
 DOCKER_IMAGE="minty/docgeth"
+
+ACCOUNT_BALANCE="${ACCOUNT_BALANCE:-999}"
+ACCOUNT_NUM="${ACCOUNT_NUM:-10}"
+ACCOUNT_PASSWORD="${ACCOUNT_PASSWORD:-password}"
 
 
 # -----------------------------------------------------------------------------
@@ -46,6 +50,9 @@ command_geth () {
 command_init () {
 	add_docgeth_volume ".docgeth"
 	DOCKER_PARAMS+=("--entrypoint init.sh")
+	DOCKER_PARAMS+=("--env ACCOUNT_BALANCE=$ACCOUNT_BALANCE")
+	DOCKER_PARAMS+=("--env ACCOUNT_NUM=$ACCOUNT_NUM")
+	DOCKER_PARAMS+=("--env PASSWORD=$ACCOUNT_PASSWORD")
 }
 
 command_pkey () {
@@ -104,7 +111,7 @@ print_help () {
 	printf '      %% docgeth.sh geth account update 0 1 2\n'
 	printf '      %% docgeth.sh geth account list\n\n'
 	printf '    Initialize a new Geth node (creates in current directory):\n'
-	printf '      %% docgeth.sh truffle develop\n\n'
+	printf '      %% docgeth.sh init\n\n'
 	printf '    Get private key for account:\n'
 	printf '      %% docgeth.sh pkey 0x1234 password\n\n'
 	printf '    Run Geth node:\n'

@@ -1,9 +1,11 @@
 #!/bin/sh
+#
 
 
 PASSWORD="${PASSWORD:-password}"
 PASSWORD_FILE="${PASSWORD_FILE:-/data/password}"
 ACCOUNT_NUM="${ACCOUNT_NUM:-10}"
+ACCOUNT_BALANCE="${ACCOUNT_BALANCE:-999}"
 BLOCK_DIFFICULTY="${BLOCK_DIFFICULTY:-0x400}"
 BLOCK_GASLIMIT="${BLOCK_GASLIMIT:-0x8000000}"
 
@@ -35,7 +37,7 @@ createAccounts() {
 	# Creates `n` number of accounts
 	for i in $(seq 1 $ACCOUNT_NUM); do
 		createAccount "$2"
-		ACCOUNTS=$ACCOUNTS'"0x'$ACCOUNT_ID'": { "balance": "999000000000000000000" },'$'\n    '
+		ACCOUNTS=$ACCOUNTS'"0x'$ACCOUNT_ID'": { "balance": "'$ACCOUNT_BALANCE'000000000000000000" },'$'\n    '
 	done
 	# Remove trailing comma
 	ACCOUNTS=${ACCOUNTS%,*}
@@ -89,7 +91,7 @@ echo "$PASSWORD" > "$PASSWORD_FILE"
 
 # ----- Create Accounts
 echo "Creating $ACCOUNT_NUM Accounts..."
-createAccounts $ACCOUNT_NUM "$PASSWORD_FILE";
+createAccounts $ACCOUNT_NUM "$PASSWORD_FILE" "$ACCOUNT_BALANCE";
 echo "------------------------------------"
 echo "    $ACCOUNTS"
 echo "------------------------------------"
