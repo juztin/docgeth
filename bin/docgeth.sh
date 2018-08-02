@@ -3,9 +3,9 @@
 
 DOCKER_IMAGE="minty/docgeth"
 
-ACCOUNT_BALANCE="${ACCOUNT_BALANCE:-999}"
-ACCOUNT_NUM="${ACCOUNT_NUM:-10}"
-ACCOUNT_PASSWORD="${ACCOUNT_PASSWORD:-password}"
+ACCOUNT_BALANCE="${DOCGETH_BALANCE:-999}"
+ACCOUNT_NUM="${DOCGETH_ACCOUNTS:-10}"
+ACCOUNT_PASSWORD="${DOCGETH_PASSWORD:-password}"
 
 
 # -----------------------------------------------------------------------------
@@ -15,15 +15,24 @@ DOCKER_PARAMS=('-it' '--rm')
 DOCKER_VOLUMES=()
 DOCKER_COMMAND=()
 
+# Adds a bind mount volume param to the Docker command
+#
+# @param 1: source path, within the current working directory
+# @param 2: destination path
 add_volume () {
 	DOCKER_VOLUMES+=("--volume $(pwd)/$1:$2")
 }
 
+# Adds a bind mount volume for `.docgeth` at `/data`, within the container
+#
 add_docgeth_volume () {
 	DOCKER_VOLUMES+=("--volume $(pwd)/.docgeth:/data")
 }
 
 # ------ Docker
+
+# Format and print the Docker command to `stdout`
+#
 print_docker_command () {
 	printf "docker run \ \n"
 	printf "	%s \ \n" "${DOCKER_PARAMS[@]}"
@@ -31,8 +40,10 @@ print_docker_command () {
 	printf "	%s %s\n" "$DOCKER_IMAGE" "${DOCKER_COMMAND[@]}"
 }
 
+# Executes the Docker command, or prints the command to `stdout` when `DOCGETH_VERBOSE` is true
+#
 dock () {
-	if [ "$PRINT_CMD" = true ]; then
+	if [ "$DOCGETH_VERBOSE" = true ]; then
 		print_docker_command
 		exit 0
 	fi
@@ -43,18 +54,37 @@ docker run \
 }
 
 # ------ Commands
+
+# Executes Geth, passing all arguments
+#
+# @params: arguments to pass to Geth
 command_geth () {
 	add_docgeth_volume ".docgeth"
+	DOCKER_COMMAND+=$@
 }
 
+# Initializes a new blockchain
+#
 command_init () {
 	add_docgeth_volume ".docgeth"
 	DOCKER_PARAMS+=("--entrypoint init.sh")
-	DOCKER_PARAMS+=("--env ACCOUNT_BALANCE=$ACCOUNT_BALANCE")
-	DOCKER_PARAMS+=("--env ACCOUNT_NUM=$ACCOUNT_NUM")
-	DOCKER_PARAMS+=("--env PASSWORD=$ACCOUNT_PASSWORD")
+	DOCKER_PARAMS+=("--env DOCGETH_BALANCE=$ACCOUNT_BALANCE")
+	DOCKER_PARAMS+=("--env DOCGETH_ACCOUNTS=$ACCOUNT_NUM")
+	DOCKER_PARAMS+=("--env DOCGETH_PASSWORD=$ACCOUNT_PASSWORD")
+
+	if [ -n "$DOCGETH_DIFFICULTY" ]; then
+		DOCKER_PARAMS+=("--env DOCGETH_DIFFICULTY=$DOCGETH_DIFFICULTY")
+	fi
+
+	if [ -n "$DOCGETH_GASLIMIT" ]; then
+		DOCKER_PARAMS+=("--env DOCGETH_GASLIMIT=$DOCGETH_GASLIMIT")
+	fi
 }
 
+# Decrypts, and prints, a private key
+#
+# @param 1: the public key to retrieve the private key of
+# @param 2: the password used to decrypt the private key
 command_pkey () {
 	add_docgeth_volume ".docgeth"
 	DOCKER_PARAMS+=("--entrypoint gethpkey")
@@ -62,6 +92,8 @@ command_pkey () {
 	DOCKER_COMMAND+=" --path /data/blockchain/keystore"
 }
 
+# Starts a geth instance, using the `.docgeth` directory created during `init`
+#
 command_run () {
 	add_docgeth_volume
 	#add_volume ".docgeth/.ethereum" "/root/.ethereum"
@@ -80,11 +112,13 @@ command_run () {
 	DOCKER_COMMAND+=' --metrics'
 	DOCKER_COMMAND+=' --preload /usr/local/bin/miner.js'
 	DOCKER_COMMAND+=' --gcmode archive'
-	#DOCKER_COMMAND+=' --unlock 5'
 	DOCKER_COMMAND+=' --password /data/password'
 	DOCKER_COMMAND+=' console'
 }
 
+# Starts a Docker container where the entrypoint is `/bin/sh`
+#
+# @params: arguments to pass to `/bin/sh`
 command_shell () {
 	add_docgeth_volume ".docgeth"
 	DOCKER_PARAMS+=("--entrypoint /bin/sh")
@@ -93,6 +127,9 @@ command_shell () {
 
 
 # ------ Params
+
+# Prints usage/help
+#
 print_help () {
 	printf 'Usage: %s [command] [params]\n' "$0"
 	printf '\n'
@@ -104,12 +141,13 @@ print_help () {
 	printf '\n'
 	printf '  EXAMPLES\n'
 	printf '    Run Geth command:\n'
-	printf '      %% docgeth.sh geth account new --password /data/password\n'
-	printf '      %% docgeth.sh geth account new --password <(echo password)\n'
-	printf '      %% docgeth.sh geth account update 0 1 2\n'
-	printf '      %% docgeth.sh geth account list\n\n'
-	printf '    Initialize a new Geth node (creates in current directory):\n'
-	printf '      %% docgeth.sh init\n\n'
+	printf '      %% docgeth.sh geth account new --datadir /data/blockchain\n'
+	printf '      %% docgeth.sh geth account update 0 1 2 --datadir /data/blockchain\n'
+	printf '      %% docgeth.sh geth account list --datadir /data/blockchain\n\n'
+	printf '    Initialize with 10 accounts, password of `password` and a balance of 999 (createed in current directory):\n'
+	printf '      %% docgeth.sh init\n'
+	printf '    Initialize with 5 accounts, password of `s3cr3t` and a blance of 777 (createed in current directory):\n'
+	printf '      %% DOCGETH_ACCOUNTS=5 DOCGETH_PASSWORD=s3cr3t DOCGETH_BALANCE=777 docgeth.sh init\n\n'
 	printf '    Get private key for account:\n'
 	printf '      %% docgeth.sh pkey 0x1234 password\n\n'
 	printf '    Run Geth node:\n'
@@ -120,10 +158,14 @@ print_help () {
 	printf '      %% docgeth.sh shell -c "geth --version"\n'
 	printf '      %% docgeth.sh shell -c "gethpkey --key 0x123123 --password s3cr3t"\n\n'
 	printf '    Output Docker command only (does not execute it):\n'
-	printf '      %% PRINT_CMD=true docgeth.sh pkey 0x1234 password\n'
+	printf '      %% DOCGETH_VERBOSE=true docgeth.sh pkey 0x1234 password\n'
 	printf '\n'
 }
 
+# Parse arguments, and run matching command
+#
+# @param 1: the command to run
+# @params: arguments for the command
 parse_command () {
 	command="$1"
 	case "$command" in
