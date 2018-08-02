@@ -5,7 +5,7 @@
 PASSWORD="${DOCGETH_PASSWORD:-password}"
 ACCOUNT_NUM="${DOCGETH_ACCOUNTS:-10}"
 ACCOUNT_BALANCE="${DOCGETH_BALANCE:-999}"
-BLOCK_DIFFICULTY="${DOCGETH_DIFFICULTY:-0x400}"
+BLOCK_DIFFICULTY="${DOCGETH_DIFFICULTY:-0x100}"
 BLOCK_GASLIMIT="${DOCGETH_GASLIMIT:-0x8000000}"
 
 PASSWORD_FILE="/data/password"
@@ -38,7 +38,7 @@ createAccounts() {
 	# Creates `n` number of accounts
 	for i in $(seq 1 $ACCOUNT_NUM); do
 		createAccount "$2"
-		ACCOUNTS=$ACCOUNTS'"0x'$ACCOUNT_ID'": { "balance": "'$ACCOUNT_BALANCE'000000000000000000" },'$'\n    '
+		ACCOUNTS=$ACCOUNTS'"'$ACCOUNT_ID'": { "balance": "'$ACCOUNT_BALANCE'000000000000000000" },'$'\n    '
 	done
 	# Remove trailing comma
 	ACCOUNTS=${ACCOUNTS%,*}
@@ -50,23 +50,18 @@ createAccounts() {
 createGenesis() {
 	echo '{
   "config": {
-        "chainId": 10,
+        "chainId": 11,
         "homesteadBlock": 0,
-        "eip150Block": 0,
-        "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
         "eip155Block": 0,
         "eip158Block": 0,
-        "ByzantiumBlock": 0,
-        "ethash": {}
     },
   "coinbase"   : "0x0000000000000000000000000000000000000000",
   "difficulty" : '\"$BLOCK_DIFFICULTY\"',
   "gasLimit"   : '\"$BLOCK_GASLIMIT\"',
-  "extraData"  : "",
   "mixhash"    : "0x0000000000000000000000000000000000000000000000000000000000000000",
   "nonce"      : "0x0000000000000042",
   "parentHash" : "0x0000000000000000000000000000000000000000000000000000000000000000",
-  "timestamp"  : "0x00",
+  "timestamp"  : "0x0",
   "alloc": {
     '"$ACCOUNTS"'
   }
