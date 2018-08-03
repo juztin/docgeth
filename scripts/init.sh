@@ -53,7 +53,7 @@ createGenesis() {
         "chainId": 11,
         "homesteadBlock": 0,
         "eip155Block": 0,
-        "eip158Block": 0,
+        "eip158Block": 0
     },
   "coinbase"   : "0x0000000000000000000000000000000000000000",
   "difficulty" : '\"$BLOCK_DIFFICULTY\"',
