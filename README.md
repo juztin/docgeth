@@ -8,14 +8,14 @@ Docker image that helps in creating/running a local Geth node for testing.
     ```shell
     curl -L https://github.com/juztin/docgeth/raw/master/bin/docgeth.sh > ~/bin/docgeth.sh && chmod +x ~/bin/docgeth.sh
     ```
- 2. Initialize a new node with  
+ 2. Initialize a new node with _(creates a single account with 9,999 ether)_  
     ```shell
     ./bin/docgeth.sh init
     ```  
     _**OR**_  
-    Init a new node with 2 accounts, 555 ether each, and setting passwords as 's3cr3t'
+    Init a new node with 5 accounts, 555 ether each, and setting passwords as 's3cr3t'
     ```shell
-    %  DOCGETH_ACCOUNT_NUM=2 DOCGETH_ACCOUNT_BALANCE=555 DOCGETH_ACCOUNT_PASSWORD=s3cr3t ./bin/docgeth.sh init
+    %  DOCGETH_ACCOUNT_NUM=5 DOCGETH_ACCOUNT_BALANCE=555 DOCGETH_ACCOUNT_PASSWORD=s3cr3t ./bin/docgeth.sh init
     ```
  3. Run Geth  
     ```shell
