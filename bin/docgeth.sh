@@ -34,9 +34,9 @@ add_docgeth_volume () {
 # Format and print the Docker command to `stdout`
 #
 print_docker_command () {
-	printf "docker run \ \n"
-	printf "	%s \ \n" "${DOCKER_PARAMS[@]}"
-	printf "	%s \ \n" "${DOCKER_VOLUMES[@]}"
+	printf "docker run \\\\\n"
+	printf "	%s \\\\\n" "${DOCKER_PARAMS[@]}"
+	printf "	%s \\\\\n" "${DOCKER_VOLUMES[@]}"
 	printf "	%s %s\n" "$DOCKER_IMAGE" "${DOCKER_COMMAND[@]}"
 }
 
@@ -136,6 +136,7 @@ print_help () {
 	printf '  COMMANDS\n'
 	printf '    geth    [params] - %s\n' "Runs geth with given args"
 	printf '    init             - %s\n' "Initializes a new geth node"
+	printf '    pkey    [params] - %s\n' "Gets the matching private key"
 	printf '    run              - %s\n' "Starts the geth node with a lightweight auto-miner"
 	printf '    shell   [params] - %s\n' "Opens a Docker shell"
 	printf '\n'
@@ -156,7 +157,6 @@ print_help () {
 	printf '      %% docgeth.sh shell\n'
 	printf '      %% docgeth.sh shell -c "ls -la"\n'
 	printf '      %% docgeth.sh shell -c "geth --version"\n'
-	printf '      %% docgeth.sh shell -c "gethpkey --key 0x123123 --password s3cr3t"\n\n'
 	printf '    Output Docker command only (does not execute it):\n'
 	printf '      %% DOCGETH_VERBOSE=true docgeth.sh pkey 0x1234 password\n'
 	printf '\n'
