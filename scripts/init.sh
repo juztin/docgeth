@@ -49,22 +49,24 @@ createAccounts() {
 # @param 1: The name of the genesis file.
 createGenesis() {
 	echo '{
+  "alloc": {
+    '"$ACCOUNTS"'
+  },
   "config": {
-        "chainId": 11,
+        "chainId": 33,
         "homesteadBlock": 0,
         "eip155Block": 0,
-        "eip158Block": 0
+        "eip158Block": 0,
+        "eip160Block": 0,
+        "byzantiumBlock": 0
     },
-  "coinbase"   : "0x0000000000000000000000000000000000000000",
+  "coinbase": "0x3333333333333333333333333333333333333333",
   "difficulty" : '\"$BLOCK_DIFFICULTY\"',
   "gasLimit"   : '\"$BLOCK_GASLIMIT\"',
   "mixhash"    : "0x0000000000000000000000000000000000000000000000000000000000000000",
   "nonce"      : "0x0000000000000042",
   "parentHash" : "0x0000000000000000000000000000000000000000000000000000000000000000",
-  "timestamp"  : "0x0",
-  "alloc": {
-    '"$ACCOUNTS"'
-  }
+  "timestamp"  : "0x00"
 }' > /data/genesis.json
 }
 

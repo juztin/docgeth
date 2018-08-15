@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 
 DOCKER_IMAGE="minty/docgeth"
@@ -100,7 +100,7 @@ command_run () {
 	DOCKER_PARAMS+=('--publish 30303:30303')
 	DOCKER_PARAMS+=('--publish 8545:8545')
 	DOCKER_COMMAND+=' --datadir /data/blockchain'
-	DOCKER_COMMAND+=' --networkid 10'
+	DOCKER_COMMAND+=' --networkid 33'
 	DOCKER_COMMAND+=' --nat any'
 	DOCKER_COMMAND+=' --nodiscover'
 	DOCKER_COMMAND+=' --rpc'
@@ -115,6 +115,7 @@ command_run () {
 	DOCKER_COMMAND+=' --password /data/password'
 	DOCKER_COMMAND+=' console'
 }
+#	DOCKER_COMMAND+=' --rpccorsdomain="*"'
 
 # Starts a Docker container where the entrypoint is `/bin/sh`
 #
