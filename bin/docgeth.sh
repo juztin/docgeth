@@ -6,6 +6,9 @@ DOCKER_IMAGE="minty/docgeth"
 ACCOUNT_BALANCE="${DOCGETH_BALANCE:-9999}"
 ACCOUNT_NUM="${DOCGETH_ACCOUNTS:-1}"
 ACCOUNT_PASSWORD="${DOCGETH_PASSWORD:-password}"
+RPC_PORT="${DOCGETH_RPC_PORT:-8545}"
+CACHE="${DOCGETH_CACHE:-1024}"
+CORS_DOMAIN="${DOCGETH_CORS_DOMAIN:-localhost}"
 
 
 # -----------------------------------------------------------------------------
@@ -98,21 +101,23 @@ command_run () {
 	add_docgeth_volume
 	#add_volume ".docgeth/.ethereum" "/root/.ethereum"
 	DOCKER_PARAMS+=('--publish 30303:30303')
-	DOCKER_PARAMS+=('--publish 8545:8545')
+	DOCKER_PARAMS+=('--publish '"$RPC_PORT:$RPC_PORT")
+	DOCKER_COMMAND+=' --cache '"$CACHE"                         # Try an prevent OOM issue
 	DOCKER_COMMAND+=' --datadir /data/blockchain'
+	DOCKER_COMMAND+=' --ethash.cachedir /data/blockchain/cache' # Store in container mount
+	DOCKER_COMMAND+=' --ethash.dagdir /data/blockchain/dag'     # Store in container mount
+	DOCKER_COMMAND+=' --gcmode archive'                         # Persist to disk
 	DOCKER_COMMAND+=' --networkid 33'
 	DOCKER_COMMAND+=' --nat any'
 	DOCKER_COMMAND+=' --nodiscover'
+	DOCKER_COMMAND+=' --password /data/password'
+	DOCKER_COMMAND+=' --preload /usr/local/bin/miner.js'
 	DOCKER_COMMAND+=' --rpc'
 	DOCKER_COMMAND+=' --rpcaddr 0.0.0.0'
-	DOCKER_COMMAND+=' --rpcapi web3,eth,personal,miner,net,txpool'
-	DOCKER_COMMAND+=' --rpccorsdomain="*"'
+	DOCKER_COMMAND+=' --rpcapi web3,eth,personal,net,txpool'
+	DOCKER_COMMAND+=' --rpccorsdomain="'"$CORS_DOMAIN"'"'
 	DOCKER_COMMAND+=' --ws'
 	DOCKER_COMMAND+=' --wsaddr 0.0.0.0'
-	DOCKER_COMMAND+=' --metrics'
-	DOCKER_COMMAND+=' --preload /usr/local/bin/miner.js'
-	DOCKER_COMMAND+=' --gcmode archive'
-	DOCKER_COMMAND+=' --password /data/password'
 	DOCKER_COMMAND+=' console'
 }
 #	DOCKER_COMMAND+=' --rpccorsdomain="*"'
